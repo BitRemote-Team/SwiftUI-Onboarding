@@ -45,14 +45,7 @@ struct BottomSection<C: View> {
 @MainActor
 extension BottomSection: View {
     var body: some View {
-        VStack(alignment: .center, spacing: .zero) {
-            dataPrivacyImage
-            disclosureText
-            continueButton
-        }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 24)
-        .background(.background.secondary)
+        dataPrivacyContent()
         .mask(opacityLinearGradient)
         .opacity(isAnimating ? 1 : 0)
         .onAppear(perform: onAppear)
