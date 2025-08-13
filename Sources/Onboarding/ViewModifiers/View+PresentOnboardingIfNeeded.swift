@@ -192,6 +192,7 @@ extension OnboardingSheetModifier: ViewModifier {
                 config: config,
                 appIcon: appIcon,
                 continueAction: handleContinue,
+                titleContent: EmptyView.init,
                 dataPrivacyContent: dataPrivacyContent,
                 signInWithAppleConfiguration: signInWithAppleConfiguration
             )

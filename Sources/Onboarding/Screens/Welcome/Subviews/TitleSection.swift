@@ -8,20 +8,23 @@
 import SwiftUI
 
 @MainActor
-struct TitleSection {
+struct TitleSection<T: View> {
     private let config: OnboardingConfiguration
     private let appIcon: Image
     private let shouldHideAppIcon: Bool
+    private let titleContent: () -> T
     @State private var isAnimating = false
 
     init(
         config: OnboardingConfiguration,
         appIcon: Image,
-        shouldHideAppIcon: Bool
+        shouldHideAppIcon: Bool,
+        @ViewBuilder titleContent: @escaping () -> T
     ) {
         self.config = config
         self.appIcon = appIcon
         self.shouldHideAppIcon = shouldHideAppIcon
+        self.titleContent = titleContent
     }
 
     private func onAppear() {
@@ -36,8 +39,7 @@ extension TitleSection: View {
     var body: some View {
         VStack(alignment: config.titleSectionAlignment, spacing: 2) {
             appIconView
-            welcomeToText
-            appDisplayNameText
+            titleContent()
         }
         .frame(
             maxWidth: .infinity,
@@ -79,6 +81,7 @@ extension TitleSection: View {
     TitleSection(
         config: .mock,
         appIcon: Image(.onboardingKitMockAppIcon),
-        shouldHideAppIcon: true
+        shouldHideAppIcon: true,
+        titleContent: EmptyView.init
     )
 }

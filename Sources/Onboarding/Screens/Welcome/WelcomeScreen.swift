@@ -7,10 +7,11 @@
 import SwiftUI
 
 @MainActor
-public struct WelcomeScreen<C: View> {
+public struct WelcomeScreen<T: View, C: View> {
     private let config: OnboardingConfiguration
     private let appIcon: Image
     private let continueAction: () -> Void
+    private let titleContent: () -> T
     private let dataPrivacyContent: () -> C
     private let signInWithAppleConfiguration: SignInWithAppleButtonConfiguration?
     @State private var isAnimating = false
@@ -19,12 +20,14 @@ public struct WelcomeScreen<C: View> {
         config: OnboardingConfiguration,
         appIcon: Image,
         continueAction: @escaping () -> Void,
+        @ViewBuilder titleContent: @escaping () -> T,
         @ViewBuilder dataPrivacyContent: @escaping () -> C,
         signInWithAppleConfiguration: SignInWithAppleButtonConfiguration? = nil
     ) {
         self.config = config
         self.appIcon = appIcon
         self.continueAction = continueAction
+        self.titleContent = titleContent
         self.dataPrivacyContent = dataPrivacyContent
         self.signInWithAppleConfiguration = signInWithAppleConfiguration
     }
@@ -59,7 +62,8 @@ extension WelcomeScreen: View {
         TitleSection(
             config: config,
             appIcon: appIcon,
-            shouldHideAppIcon: !isAnimating
+            shouldHideAppIcon: !isAnimating,
+            titleContent: titleContent
         )
         .offset(y: isAnimating ? 0 : 200)
     }
@@ -88,6 +92,7 @@ extension WelcomeScreen: View {
         continueAction: {
             print("Continue Tapped")
         },
+        titleContent: EmptyView.init,
         dataPrivacyContent: {
             Text("Privacy Policy Content")
         }
@@ -101,6 +106,7 @@ extension WelcomeScreen: View {
         continueAction: {
             print("Continue Tapped")
         },
+        titleContent: EmptyView.init,
         dataPrivacyContent: {
             Text("Privacy Policy Content")
         },

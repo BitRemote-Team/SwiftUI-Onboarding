@@ -237,6 +237,7 @@ extension OnboardingModifier: ViewModifier {
                 config: config,
                 appIcon: appIcon,
                 continueAction: continueAction,
+                titleContent: EmptyView.init,
                 dataPrivacyContent: dataPrivacyContent,
                 signInWithAppleConfiguration: signInWithAppleConfiguration
             )
