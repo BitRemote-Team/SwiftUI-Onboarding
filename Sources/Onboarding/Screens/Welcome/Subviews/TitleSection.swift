@@ -14,6 +14,7 @@ struct TitleSection<T: View> {
     private let shouldHideAppIcon: Bool
     private let titleContent: () -> T
     @State private var isAnimating = false
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     init(
         config: OnboardingConfiguration,
@@ -48,8 +49,8 @@ extension TitleSection: View {
         )
         .padding(.horizontal, 64)
         .font(.largeTitle)
-        .opacity(isAnimating ? 1 : 0)
-        .scaleEffect(isAnimating ? 1.0 : 0.5)
+        .opacity(isAnimating || accessibilityReduceMotion ? 1 : 0)
+        .scaleEffect(isAnimating || accessibilityReduceMotion ? 1.0 : 0.5)
         .onAppear(perform: onAppear)
     }
 

@@ -16,6 +16,7 @@ struct BottomSection<C: View> {
     private let dataPrivacyContent: () -> C
     @State private var isDataPrivacyPresented: Bool = false
     @State private var isAnimating: Bool = false
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     init(
         accentColor: Color,
@@ -47,7 +48,7 @@ extension BottomSection: View {
     var body: some View {
         dataPrivacyContent()
         .mask(opacityLinearGradient)
-        .opacity(isAnimating ? 1 : 0)
+        .opacity(isAnimating || accessibilityReduceMotion ? 1 : 0)
         .onAppear(perform: onAppear)
         .styledSheet(
             isPresented: $isDataPrivacyPresented,

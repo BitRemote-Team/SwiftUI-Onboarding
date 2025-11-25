@@ -15,6 +15,7 @@ public struct WelcomeScreen<T: View, C: View> {
     private let dataPrivacyContent: () -> C
     private let signInWithAppleConfiguration: SignInWithAppleButtonConfiguration?
     @State private var isAnimating = false
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     public init(
         config: OnboardingConfiguration,
@@ -62,15 +63,15 @@ extension WelcomeScreen: View {
         TitleSection(
             config: config,
             appIcon: appIcon,
-            shouldHideAppIcon: !isAnimating,
+            shouldHideAppIcon: !(isAnimating || accessibilityReduceMotion),
             titleContent: titleContent
         )
-        .offset(y: isAnimating ? 0 : 200)
+        .offset(y: isAnimating || accessibilityReduceMotion ? 0 : 200)
     }
 
     private var featureSection: some View {
         FeatureSection(config: config)
-            .opacity(isAnimating ? 1 : 0)
+            .opacity(isAnimating || accessibilityReduceMotion ? 1 : 0)
             .padding(.horizontal, 48)
     }
 
