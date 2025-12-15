@@ -44,3 +44,13 @@ public extension WelcomeScreen {
 public extension WelcomeScreen {
     static let mock: Self = .apple(.mock)
 }
+
+@MainActor
+extension WelcomeScreen: View {
+    public var body: some View {
+        switch self {
+        case let .apple(configuration):
+            AppleWelcomeScreen(config: configuration)
+        }
+    }
+}

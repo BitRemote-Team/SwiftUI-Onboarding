@@ -13,83 +13,42 @@ import SwiftUI
 public extension View {
     /// Presents onboarding content as a sheet if the user hasn't completed it yet.
     ///
+    /// Provide your onboarding view via the `onboardingContent` builder. Call the supplied
+    /// `markComplete` action when onboarding finishes to dismiss the sheet and reveal
+    /// your main content.
+    ///
     /// - Parameters:
     ///   - storage: The AppStorage property for tracking completion state (defaults to `.onboarding`)
-    ///   - welcomeScreen: The welcome screen to present
-    ///   - continueAction: Optional custom action to perform when continuing (defaults to marking complete)
+    ///   - onboardingContent: Builder that returns the onboarding UI. Receives a `markComplete` action.
     ///
     /// - Returns: A view that presents onboarding in a sheet when needed
-    func presentOnboardingIfNeeded(
+    func presentOnboardingIfNeeded<Onboarding: View>(
         storage: AppStorage<Bool> = .onboarding,
-        welcomeScreen: WelcomeScreen,
-        continueAction: (() -> Void)? = nil
+        @ViewBuilder onboardingContent: @escaping (_ markComplete: @escaping () -> Void) -> Onboarding
     ) -> some View {
         modifier(
-            OnboardingSheetModifier<EmptyView>(
+            OnboardingSheetModifier(
                 storage: storage,
-                welcomeScreen: welcomeScreen,
-                continueAction: continueAction,
-                flowContent: nil
-            )
-        )
-    }
-
-    /// Presents onboarding as a sheet and allows for a custom onboarding flow after the welcome screen.
-    ///
-    /// - Parameters:
-    ///   - flowContent: A view builder for additional steps after the welcome screen.
-    func presentOnboardingIfNeeded<F: View>(
-        storage: AppStorage<Bool> = .onboarding,
-        welcomeScreen: WelcomeScreen,
-        continueAction: (() -> Void)? = nil,
-        @ViewBuilder flowContent: @escaping () -> F
-    ) -> some View {
-        modifier(
-            OnboardingSheetModifier<F>(
-                storage: storage,
-                welcomeScreen: welcomeScreen,
-                continueAction: continueAction,
-                flowContent: flowContent
+                onboardingContent: onboardingContent
             )
         )
     }
 }
 
 @MainActor
-private struct OnboardingSheetModifier<F: View> {
-    private let welcomeScreen: WelcomeScreen
-    private let continueAction: (() -> Void)?
-    private let flowContent: (() -> F)?
+private struct OnboardingSheetModifier<Onboarding: View> {
+    private let onboardingContent: (@escaping () -> Void) -> Onboarding
     @AppStorage private var isOnboardingCompleted: Bool
-    @State private var isWelcomeScreenCompleted: Bool = false
 
     init(
         storage: AppStorage<Bool>,
-        welcomeScreen: WelcomeScreen,
-        continueAction: (() -> Void)?,
-        flowContent: (() -> F)? = nil
+        onboardingContent: @escaping (@escaping () -> Void) -> Onboarding
     ) {
         self._isOnboardingCompleted = storage
-        self.welcomeScreen = welcomeScreen
-        self.continueAction = continueAction
-        self.flowContent = flowContent
+        self.onboardingContent = onboardingContent
     }
 
-    private func handleContinue() {
-        if let action = continueAction {
-            action()
-            isWelcomeScreenCompleted = true
-            return
-        }
-
-        if flowContent != nil {
-            isWelcomeScreenCompleted = true
-        } else {
-            isOnboardingCompleted = true
-        }
-    }
-
-    private func onSheetDismiss() {
+    private func markComplete() {
         isOnboardingCompleted = true
     }
 }
@@ -99,31 +58,15 @@ extension OnboardingSheetModifier: ViewModifier {
         content
             .sheet(
                 isPresented: $isOnboardingCompleted.inverse,
-                onDismiss: onSheetDismiss,
+                onDismiss: markComplete,
                 content: sheetContent
             )
     }
 
     @ViewBuilder
     private func sheetContent() -> some View {
-        if let flowContent, isWelcomeScreenCompleted {
-            flowContent()
-        } else {
-            welcomeScreenView()
-                .interactiveDismissDisabled(true)
-        }
-    }
-}
-
-@MainActor
-private extension OnboardingSheetModifier {
-    @ViewBuilder
-    func welcomeScreenView() -> some View {
-        let screen = welcomeScreen.with(continueAction: handleContinue)
-        switch screen {
-        case let .apple(configuration):
-            AppleWelcomeScreen(config: configuration)
-        }
+        onboardingContent(markComplete)
+            .interactiveDismissDisabled(true)
     }
 }
 
@@ -132,7 +75,9 @@ private extension OnboardingSheetModifier {
         Spacer()
     }
     .presentOnboardingIfNeeded(
-        welcomeScreen: .mock
+        onboardingContent: { markComplete in
+            WelcomeScreen.mock.with(continueAction: markComplete)
+        }
     )
 }
 
@@ -141,9 +86,8 @@ private extension OnboardingSheetModifier {
         Spacer()
     }
     .presentOnboardingIfNeeded(
-        welcomeScreen: .mock,
-        flowContent: {
-            Text("Flow Content")
+        onboardingContent: { markComplete in
+            WelcomeScreen.mock.with(continueAction: markComplete)
         }
     )
 }

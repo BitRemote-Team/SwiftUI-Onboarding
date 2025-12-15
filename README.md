@@ -103,6 +103,8 @@ extension WelcomeScreen {
 }
 ```
 
+`WelcomeScreen` conforms to `View`; render it directly inside the onboarding modifier and inject the continue action via `.with(continueAction:)`.
+
 2. **Add onboarding to your app's root view:**
 ```swift
 import Onboarding
@@ -113,9 +115,10 @@ struct MyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .showOnboardingIfNeeded(
-                    welcomeScreen: .production
-                )
+                .showOnboardingIfNeeded { markComplete in
+                    WelcomeScreen.production
+                        .with(continueAction: markComplete)
+                }
         }
     }
 }
@@ -128,14 +131,13 @@ struct MyApp: App {
 You can provide a custom action to perform when the user taps "Continue":
 ```swift
 ContentView()
-    .showOnboardingIfNeeded(
-        welcomeScreen: .production,
-        continueAction: {
+    .showOnboardingIfNeeded { markComplete in
+        WelcomeScreen.production.with(continueAction: {
             // Perform analytics, API calls, etc.
             Analytics.track("onboarding_completed")
-            // Note: Onboarding completion is handled automatically
-        }
-    )
+            markComplete()
+        })
+    }
 ```
 
 #### Custom Storage
@@ -145,10 +147,10 @@ Use a custom AppStorage key for tracking onboarding state:
 @AppStorage("myCustomOnboardingKey") private var customOnboardingState = false
 
 ContentView()
-    .showOnboardingIfNeeded(
-        storage: $customOnboardingState,
-        welcomeScreen: .production
-    )
+    .showOnboardingIfNeeded(storage: $customOnboardingState) { markComplete in
+        WelcomeScreen.production
+            .with(continueAction: markComplete)
+    }
 ```
 
 #### Manual State Management
@@ -182,9 +184,10 @@ struct MyApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .presentOnboardingIfNeeded(
-                    welcomeScreen: .production
-                )
+                .presentOnboardingIfNeeded { markComplete in
+                    WelcomeScreen.production
+                        .with(continueAction: markComplete)
+                }
         }
     }
 }
@@ -192,14 +195,13 @@ struct MyApp: App {
 
 #### Multi-Screen Onboarding Flows
 
-Need more than a single welcome screen? Both modifiers support a custom flow once the initial onboarding is completed, allowing you to show setup, permissions, or tutorials before marking onboarding as complete.
+Need more than a single welcome screen? Build whatever flow you need inside the onboarding builder and call `markComplete()` when you're done.
 ```swift
-.showOnboardingIfNeeded(
-    welcomeScreen: .production,
-    flowContent: {
-        CustomTutorialView(onFinish: { /* do something */ })
+.showOnboardingIfNeeded { markComplete in
+    NavigationStack {
+        CustomTutorialView(onFinish: markComplete)
     }
-)
+}
 ```
 
 ## Configuration Options
