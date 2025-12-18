@@ -7,7 +7,10 @@
 <a href="https://github.com/Sedlacek-Solutions/SwiftUI-Onboarding/pulls"><img src="https://img.shields.io/github/issues-pr/Sedlacek-Solutions/SwiftUI-Onboarding" alt="Pull Requests Badge"/></a>
 <a href="https://github.com/Sedlacek-Solutions/SwiftUI-Onboarding/issues"><img src="https://img.shields.io/github/issues/Sedlacek-Solutions/SwiftUI-Onboarding" alt="Issues Badge"/></a>
 
-https://github.com/user-attachments/assets/ce319597-e5ba-434a-ab45-c66a6a7e501a
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/009b98bd-306d-4e04-9ee9-bf898952e5ea" width="45%" />
+  <img src="https://github.com/user-attachments/assets/7fd50fa2-5853-49c0-8c2e-3eceed123d47" width="45%" />
+</p>
 
 ## Description
 SwiftUI-Onboarding is a SwiftUI library that provides an Apple-like app onboarding experience.
