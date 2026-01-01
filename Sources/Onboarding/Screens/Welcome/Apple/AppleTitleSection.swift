@@ -11,14 +11,17 @@ import SwiftUI
 struct AppleTitleSection {
     private let config: AppleWelcomeScreen.Configuration
     private let shouldShowAppIcon: Bool
+    private let titleContent: () -> AnyView
     @State private var isAnimating = false
 
     init(
         config: AppleWelcomeScreen.Configuration,
-        shouldShowAppIcon: Bool
+        shouldShowAppIcon: Bool,
+        @ViewBuilder titleContent: @escaping () -> AnyView
     ) {
         self.config = config
         self.shouldShowAppIcon = shouldShowAppIcon
+        self.titleContent = titleContent
     }
 
     private func onAppear() {
@@ -33,8 +36,7 @@ extension AppleTitleSection: View {
     var body: some View {
         VStack(alignment: config.titleSectionAlignment, spacing: 2) {
             appIconView
-            welcomeToText
-            appDisplayNameText
+            titleContent()
         }
         .frame(
             maxWidth: .infinity,
@@ -75,6 +77,7 @@ extension AppleTitleSection: View {
 #Preview {
     AppleTitleSection(
         config: .mock,
-        shouldShowAppIcon: true
+        shouldShowAppIcon: true,
+        titleContent: { AnyView(EmptyView()) }
     )
 }

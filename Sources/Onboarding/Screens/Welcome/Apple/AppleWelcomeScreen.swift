@@ -49,10 +49,18 @@ public struct AppleWelcomeScreen {
     }
 
     private let config: Configuration
+    private let titleContent: () -> AnyView
+    private let dataPrivacyContent: () -> AnyView
     @State private var isAnimating = false
 
-    public init(config: Configuration) {
+    public init(
+        config: Configuration,
+        @ViewBuilder titleContent: @escaping () -> AnyView,
+        @ViewBuilder dataPrivacyContent: @escaping () -> AnyView,
+    ) {
         self.config = config
+        self.titleContent = titleContent
+        self.dataPrivacyContent = dataPrivacyContent
     }
 
     private func onAppear() {
@@ -94,7 +102,8 @@ extension AppleWelcomeScreen: View {
     private var titleSection: some View {
         AppleTitleSection(
             config: config,
-            shouldShowAppIcon: !isAnimating
+            shouldShowAppIcon: !isAnimating,
+            titleContent: titleContent
         )
         .offset(y: isAnimating ? 0 : 200)
     }
@@ -110,11 +119,16 @@ extension AppleWelcomeScreen: View {
             accentColor: config.accentColor,
             appDisplayName: config.appDisplayName,
             privacyPolicyURL: config.privacyPolicyURL,
-            continueAction: config.continueAction
+            continueAction: config.continueAction,
+            dataPrivacyContent: dataPrivacyContent
         )
     }
 }
 
 #Preview("Default") {
-    AppleWelcomeScreen(config: .mock)
+    AppleWelcomeScreen(
+        config: .mock,
+        titleContent: { AnyView(EmptyView()) },
+        dataPrivacyContent: { AnyView(EmptyView()) }
+    )
 }

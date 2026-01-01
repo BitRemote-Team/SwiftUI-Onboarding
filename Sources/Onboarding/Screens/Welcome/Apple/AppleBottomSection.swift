@@ -13,6 +13,7 @@ struct AppleBottomSection {
     private let appDisplayName: String
     private let privacyPolicyURL: URL?
     private let continueAction: () -> Void
+    private let dataPrivacyContent: () -> AnyView
     @State private var isAnimating: Bool = false
     @Environment(\.openURL) private var openURL
 
@@ -20,12 +21,14 @@ struct AppleBottomSection {
         accentColor: Color,
         appDisplayName: String,
         privacyPolicyURL: URL?,
-        continueAction: @escaping () -> Void
+        continueAction: @escaping () -> Void,
+        @ViewBuilder dataPrivacyContent: @escaping () -> AnyView
     ) {
         self.accentColor = accentColor
         self.appDisplayName = appDisplayName
         self.privacyPolicyURL = privacyPolicyURL
         self.continueAction = continueAction
+        self.dataPrivacyContent = dataPrivacyContent
     }
 
     private func onAppear() {
@@ -43,14 +46,7 @@ struct AppleBottomSection {
 @MainActor
 extension AppleBottomSection: View {
     var body: some View {
-        VStack(alignment: .center, spacing: .zero) {
-            dataPrivacyImage
-            disclosureText
-            continueButton
-        }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 24)
-        .background(.background.secondary)
+        dataPrivacyContent()
         .mask(opacityLinearGradient)
         .opacity(isAnimating ? 1 : 0)
         .onAppear(perform: onAppear)
@@ -117,7 +113,8 @@ extension AppleBottomSection: View {
             privacyPolicyURL: URL(string: "https://example.com/privacy"),
             continueAction: {
                 print("Continue Tapped")
-            }
+            },
+            dataPrivacyContent: { AnyView(EmptyView()) }
         )
     }
 }
