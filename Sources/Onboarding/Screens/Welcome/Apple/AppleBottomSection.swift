@@ -16,6 +16,7 @@ struct AppleBottomSection {
     private let dataPrivacyContent: () -> AnyView
     @State private var isAnimating: Bool = false
     @Environment(\.openURL) private var openURL
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     init(
         accentColor: Color,
@@ -48,7 +49,7 @@ extension AppleBottomSection: View {
     var body: some View {
         dataPrivacyContent()
         .mask(opacityLinearGradient)
-        .opacity(isAnimating ? 1 : 0)
+        .opacity(isAnimating || accessibilityReduceMotion ? 1 : 0)
         .onAppear(perform: onAppear)
     }
 

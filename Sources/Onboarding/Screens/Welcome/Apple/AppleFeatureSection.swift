@@ -11,6 +11,7 @@ import SwiftUI
 struct AppleFeatureSection: View {
     private let config: AppleWelcomeScreen.Configuration
     @State private var isAnimating: [Bool] = []
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     init(config: AppleWelcomeScreen.Configuration) {
         self.config = config
@@ -35,8 +36,8 @@ struct AppleFeatureSection: View {
             info: config.features[index],
             accentColor: config.accentColor
         )
-        .opacity(isAnimating[index] ? 1 : 0)
-        .offset(y: isAnimating[index] ? 0 : 100)
+        .opacity(isAnimating[index] || accessibilityReduceMotion ? 1 : 0)
+        .offset(y: isAnimating[index] || accessibilityReduceMotion ? 0 : 100)
         .onAppear {
             Animation.feature(index: index).deferred {
                 isAnimating[index] = true

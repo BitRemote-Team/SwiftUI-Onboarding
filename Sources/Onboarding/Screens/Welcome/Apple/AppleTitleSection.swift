@@ -13,6 +13,7 @@ struct AppleTitleSection {
     private let shouldShowAppIcon: Bool
     private let titleContent: () -> AnyView
     @State private var isAnimating = false
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     init(
         config: AppleWelcomeScreen.Configuration,
@@ -45,8 +46,8 @@ extension AppleTitleSection: View {
         )
         .padding(.horizontal, 64)
         .font(.largeTitle)
-        .opacity(isAnimating ? 1 : 0)
-        .scaleEffect(isAnimating ? 1.0 : 0.5)
+        .opacity(isAnimating || accessibilityReduceMotion ? 1 : 0)
+        .scaleEffect(isAnimating || accessibilityReduceMotion ? 1.0 : 0.5)
         .onAppear(perform: onAppear)
     }
 

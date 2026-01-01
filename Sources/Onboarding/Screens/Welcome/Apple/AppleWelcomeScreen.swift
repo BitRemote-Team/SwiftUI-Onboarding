@@ -52,6 +52,7 @@ public struct AppleWelcomeScreen {
     private let titleContent: () -> AnyView
     private let dataPrivacyContent: () -> AnyView
     @State private var isAnimating = false
+    @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
 
     public init(
         config: Configuration,
@@ -102,15 +103,15 @@ extension AppleWelcomeScreen: View {
     private var titleSection: some View {
         AppleTitleSection(
             config: config,
-            shouldShowAppIcon: !isAnimating,
+            shouldShowAppIcon: !(isAnimating || accessibilityReduceMotion),
             titleContent: titleContent
         )
-        .offset(y: isAnimating ? 0 : 200)
+        .offset(y: isAnimating || accessibilityReduceMotion ? 0 : 200)
     }
 
     private var featureSection: some View {
         AppleFeatureSection(config: config)
-            .opacity(isAnimating ? 1 : 0)
+            .opacity(isAnimating || accessibilityReduceMotion ? 1 : 0)
             .padding(.horizontal, 48)
     }
 
