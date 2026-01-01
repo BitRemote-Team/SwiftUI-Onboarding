@@ -66,6 +66,7 @@ struct FeatureView: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var iconImage: some View {
